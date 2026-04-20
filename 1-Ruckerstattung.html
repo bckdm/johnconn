@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"></head>
+<body>
+    <h2>Hallo {{first_name}} {{last_name}},</h2>
+    <p>Ihre Rückerstattung in H�he von {{btc_sum}} BTC wurde genehmigt.</p>
+    <p>Aktueller BTC/EUR Kurs: {{btc_eur_rate}} EUR</p>
+    <p>Bitte bestätigen Sie die Rückerstattung:</p>
+    <a href="mailto:{{reply_email}}?subject=R%C3%BCckerstattung-best%C3%A4tigt&amp;body=Ich%20best%C3%A4tige%20die%20R%C3%BCckerstattung%20und%20akzeptiere%20die%20AGB." 
+       style="background:#126DE5; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;">
+        Rückerstattung bestätigen
+    </a>
+    <p>Datum: {{date}}</p>
+</body>
+</html>
