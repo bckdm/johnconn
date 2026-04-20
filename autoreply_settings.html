@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Auto-Reply Manager - Settings</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .sidebar { min-height: 100vh; background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); }
+        .sidebar .nav-link { color: rgba(255,255,255,0.9); padding: 12px 20px; margin: 5px 0; border-radius: 10px; }
+        .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(255,255,255,0.2); color: white; }
+        .settings-card { border-radius: 12px; margin-bottom: 20px; }
+        .settings-card .card-header { border-radius: 12px 12px 0 0; }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-2 p-0 sidebar">
+                <div class="text-center py-4">
+                    <i class="bi bi-arrow-repeat fs-1 text-white"></i>
+                    <h4 class="text-white mt-2">Auto-Reply Manager</h4>
+                    <small class="text-white-50">Part 2: Auto Response</small>
+                </div>
+                <nav class="nav flex-column px-3">
+                    <a class="nav-link" href="/autoreply-dashboard">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                    <a class="nav-link" href="/autoreply-logs">
+                        <i class="bi bi-journal"></i> Logs
+                    </a>
+                    <a class="nav-link" href="/autoreply-templates">
+                        <i class="bi bi-envelope-paper"></i> Reply Templates
+                    </a>
+                    <a class="nav-link active" href="/autoreply-settings">
+                        <i class="bi bi-gear"></i> Settings
+                    </a>
+                    <hr class="bg-light">
+                    <a class="nav-link" href="/campaign-dashboard">
+                        <i class="bi bi-send"></i> Switch to Campaigns
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-md-10 p-4">
+                <h2 class="mb-4"><i class="bi bi-gear"></i> System Settings</h2>
+                
+                <!-- Flash Messages -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category if category != 'error' else 'danger' }} alert-dismissible fade show">
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST">
+                    <!-- IMAP Settings -->
+                    <div class="card settings-card">
+                        <div class="card-header bg-primary text-white">
+                            <h5><i class="bi bi-inbox"></i> IMAP Settings (Incoming - Read Emails)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">IMAP Server</label>
+                                    <input type="text" name="imap_server" class="form-control" 
+                                           value="{{ settings.get('imap_server', '') }}" placeholder="imap.gmail.com">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">IMAP Port</label>
+                                    <input type="number" name="imap_port" class="form-control" 
+                                           value="{{ settings.get('imap_port', '993') }}" placeholder="993">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">IMAP Username (Email)</label>
+                                    <input type="email" name="imap_user" class="form-control" 
+                                           value="{{ settings.get('imap_user', '') }}" placeholder="your@email.com">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">IMAP Password (App Password)</label>
+                                    <input type="password" name="imap_password" class="form-control" 
+                                           value="{{ settings.get('imap_password', '') }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- SMTP Settings -->
+                    <div class="card settings-card">
+                        <div class="card-header bg-success text-white">
+                            <h5><i class="bi bi-send"></i> SMTP Settings (Outgoing - Send Replies)</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">SMTP Server</label>
+                                    <input type="text" name="smtp_server" class="form-control" 
+                                           value="{{ settings.get('auto_smtp_server', settings.get('smtp_server', '')) }}" placeholder="smtp.gmail.com">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">SMTP Port</label>
+                                    <input type="number" name="smtp_port" class="form-control" 
+                                           value="{{ settings.get('auto_smtp_port', settings.get('smtp_port', '465')) }}" placeholder="465">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">SMTP Username (Email)</label>
+                                    <input type="email" name="smtp_user" class="form-control" 
+                                           value="{{ settings.get('auto_smtp_user', settings.get('smtp_user', '')) }}" placeholder="your@email.com">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">SMTP Password (App Password)</label>
+                                    <input type="password" name="smtp_password" class="form-control" 
+                                           value="{{ settings.get('auto_smtp_password', settings.get('smtp_password', '')) }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Warmup Settings -->
+                    <div class="card settings-card">
+                        <div class="card-header bg-info text-white">
+                            <h5><i class="bi bi-thermometer-half"></i> Email Warmup Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <div class="form-check">
+                                        <input type="checkbox" class="form-check-input" id="warmup_enabled" name="warmup_enabled" 
+                                               {% if settings.get('warmup_enabled', 'true') == 'true' %}checked{% endif %}>
+                                        <label class="form-check-label" for="warmup_enabled">Enable Email Warmup</label>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Current Warmup Week</label>
+                                    <select name="warmup_week" class="form-select">
+                                        {% for week in warmup_schedule %}
+                                        <option value="{{ week.week }}" {% if settings.get('warmup_week', '1')|int == week.week %}selected{% endif %}>
+                                            Week {{ week.week }} - {{ week.limit }} emails/day - {{ week.description }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label">Daily Email Limit (if warmup disabled)</label>
+                                    <input type="number" name="daily_email_limit" class="form-control" 
+                                           value="{{ settings.get('daily_email_limit', '50') }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reply Settings -->
+                    <div class="card settings-card">
+                        <div class="card-header bg-warning text-white">
+                            <h5><i class="bi bi-envelope"></i> Reply Settings</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label">Reply Email Address</label>
+                                <input type="email" name="reply_email" class="form-control" 
+                                       value="{{ settings.get('reply_email', 'auszahlung@as-blockchain.com') }}">
+                                <small class="text-muted">Email address that clients will reply to (appears in mailto: links)</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-save"></i> Save All Settings
+                        </button>
+                        <a href="/autoreply-dashboard" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-arrow-left"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </form>
+                
+                <!-- Help Section -->
+                <div class="alert alert-info mt-4">
+                    <h5><i class="bi bi-question-circle"></i> Need Help?</h5>
+                    <ul class="mb-0">
+                        <li><strong>For Gmail:</strong> Enable 2-Factor Authentication and generate an <strong>App Password</strong></li>
+                        <li><strong>App Password:</strong> Use this instead of your regular password</li>
+                        <li><strong>IMAP must be enabled</strong> in your email account settings</li>
+                        <li><strong>Test your settings</strong> by sending a test email from your client email</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
